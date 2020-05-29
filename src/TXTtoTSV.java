@@ -4,10 +4,15 @@ public class TXTtoTSV {
 	String EOA="EindeParagraaf";
 	String EOP="EindePagina";
 	int tokenCounts[]=new int[99];
+	int offsetTracker[][]=new int[10][10000];
 	Integer index=0;
 	int pageCounter=1;
 	int counter;
 	
+	public int[][] getOffsetTracker() {
+		return offsetTracker;
+	}
+
 	/*This class will change a txt file to a tsv file, The txt file needs to be prepped to contain the EOF,EOA,and EOP tags, respectively standing for: end of file,
 	 * end of answer and end of page. 
 	 * It will also return a array of tokencounts per page.
@@ -28,6 +33,8 @@ public class TXTtoTSV {
 			}
 			string=reader.readLine();
 		}
+		offsetTracker[pageCounter][tokenCounts[pageCounter]]=Integer.parseInt(reader.readLine());
+		System.out.println(pageCounter+"\t"+tokenCounts[pageCounter]+"\t"+offsetTracker[pageCounter][tokenCounts[pageCounter]]);
 		return answer;
 	}
 	
@@ -37,17 +44,10 @@ public class TXTtoTSV {
 		while(answer.charAt(index)!=' '&& answer.charAt(index)!='\t'){
 			word+=answer.charAt(index);
 			counter++;
-			if(counter==2326){
-				temp=1;
-				System.out.println(answer.charAt(index-1)+""+answer.charAt(index));
-			}
 				index++;
 				if(index==answer.length()){
 					break;
 				}
-		}
-		if(temp==1){
-			System.out.println(word);
 		}
 		return word;
 	}
