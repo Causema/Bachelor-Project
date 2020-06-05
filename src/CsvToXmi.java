@@ -17,6 +17,7 @@ private int addOffset(int location){
 	for(int i=0;i<=location;i++){
 		offset+=offsetTracker[Integer.valueOf(pageIndex)][i];
 	}
+//	System.out.println(pageIndex+"\t"+location+"\t"+offset);
 //	System.out.println(location+"\t"+offset);
 	return offset;
 }
@@ -25,7 +26,7 @@ private int properReference(String string){
 	int i;
 	int offset=0;
 	for(i=1;i<Integer.valueOf(pageIndex);i++){
-		offset+=tokenCounts[Integer.valueOf(pageIndex)];
+		offset+=tokenCounts[i];
 	}
 	return offset;
 }
@@ -67,6 +68,9 @@ private String copyString(String copy,String original, char separationSymbol){
 					offset=properReference(string);
 					index++;
 					begin=copyString(begin, string , ' ');
+					if(edit.equals("Knowledge Certainity Indicator")){
+						System.out.println(pageIndex+"\t"+begin+"\t"+offset);
+					}
 					offset+=Integer.valueOf(begin);
 					offset-=addOffset(Integer.valueOf(begin));
 					index+=3;

@@ -3,6 +3,7 @@ public class TXTtoTSV {
 	String EOF="EindeBestand";
 	String EOA="EindeParagraaf";
 	String EOP="EindePagina";
+	int test=0;
 	int tokenCounts[]=new int[99];
 	int offsetTracker[][]=new int[10][10000];
 	Integer index=0;
@@ -26,15 +27,17 @@ public class TXTtoTSV {
 		while(!string.equals(EOA)){
 			if(!string.equals(EOP)){
 				answer+=string+" ";
-				tokenCounts[pageCounter]+=string.replace(" ", "").length();
-				
+				tokenCounts[pageCounter]+=string.length()+1;
+				test++;
 			}else{
+				System.out.println(pageCounter+"\t"+tokenCounts[pageCounter]);
 				pageCounter++;
+				
 			}
 			string=reader.readLine();
 		}
 		offsetTracker[pageCounter][tokenCounts[pageCounter]]=Integer.parseInt(reader.readLine());
-		System.out.println(pageCounter+"\t"+tokenCounts[pageCounter]+"\t"+offsetTracker[pageCounter][tokenCounts[pageCounter]]);
+	//	System.out.println(pageCounter+"\t"+tokenCounts[pageCounter]+"\t"+offsetTracker[pageCounter][tokenCounts[pageCounter]]);
 		return answer;
 	}
 	
