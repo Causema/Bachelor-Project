@@ -9,13 +9,24 @@ public class CsvToXmi{
 int index;
 Queue<Integer> listOfIndexes = new LinkedList<Integer>();
 int tokenCounts[]=new int[99];
+int offsetTracker[][]=new int[10][10000];
+String pageIndex="1";
 
+private int addOffset(int location){
+	int offset=0;
+	for(int i=0;i<=location;i++){
+		offset+=offsetTracker[Integer.valueOf(pageIndex)][i];
+	}
+//	System.out.println(pageIndex+"\t"+location+"\t"+offset);
+//	System.out.println(location+"\t"+offset);
+	return offset;
+}
 private int properReference(String string){
-	String pageIndex=copyString("", string , ':');
+	pageIndex=copyString("", string , ':');
 	int i;
 	int offset=0;
 	for(i=1;i<Integer.valueOf(pageIndex);i++){
-		offset+=tokenCounts[Integer.valueOf(pageIndex)];
+		offset+=tokenCounts[i];
 	}
 	return offset;
 }
@@ -28,18 +39,19 @@ private String copyString(String copy,String original, char separationSymbol){
 	return copy;
 	}
 	
+	public void setOffsetTracker(int[][] offsetTracker) {
+	this.offsetTracker = offsetTracker;
+}
+
 	public void setTokenCounts(int[] tokenCounts) {
 	this.tokenCounts = tokenCounts;
 	int i=1;
 	int test=0;
-	while(i<4){
-		System.out.println(tokenCounts[i]);
-		i++;
-	}
 	
 }
-	CsvToXmi(int tokenCounts[]){
+	CsvToXmi(int tokenCounts[],int offsetTracker[][]){
 		setTokenCounts(tokenCounts);
+		setOffsetTracker(offsetTracker);
 		int offset=0;
 		try(BufferedReader reader= new BufferedReader(new FileReader("C:\\Users\\chris\\Desktop\\Paper\\test.txt"))){
 			Integer id=16057;
@@ -56,7 +68,11 @@ private String copyString(String copy,String original, char separationSymbol){
 					offset=properReference(string);
 					index++;
 					begin=copyString(begin, string , ' ');
+					if(edit.equals("Knowledge Certainity Indicator")){
+						System.out.println(pageIndex+"\t"+begin+"\t"+offset);
+					}
 					offset+=Integer.valueOf(begin);
+					offset-=addOffset(Integer.valueOf(begin));
 					index+=3;
 					begin=Integer.toString(offset);
 					offset=properReference(string);
@@ -66,6 +82,7 @@ private String copyString(String copy,String original, char separationSymbol){
 						index++;
 					}
 					offset+=Integer.valueOf(end);
+					offset-=addOffset(Integer.valueOf(end));
 					end=Integer.toString(offset);
 					
 					//<chunk:Chunk xmi:id="14986" sofa="12" begin="0" end="15" chunkValue="test"/>
@@ -86,8 +103,6 @@ private String copyString(String copy,String original, char separationSymbol){
 			}catch (IOException e) {
 			   System.out.println("writer"+e);
 			}
-			
-			System.out.println(reader.readLine());
 		}catch (IOException e) {
 		   System.out.println(e);
 		}
