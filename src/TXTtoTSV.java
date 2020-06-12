@@ -24,7 +24,7 @@ public class TXTtoTSV {
 
 	private String completeAnswer(BufferedReader reader,String string) throws IOException{
 		String answer="";
-		String answerNumber="ANSWER "+answerID;
+		String answerNumber="ANSWER "+answerID+" ";
 		while(!string.equals(EOA)){
 			if(!string.equals(EOP)){
 				answer+=string+" ";
