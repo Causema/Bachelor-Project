@@ -17,8 +17,6 @@ private int addOffset(int location){
 	for(int i=0;i<=location;i++){
 		offset+=offsetTracker[Integer.valueOf(pageIndex)][i];
 	}
-//	System.out.println(pageIndex+"\t"+location+"\t"+offset);
-//	System.out.println(location+"\t"+offset);
 	return offset;
 }
 private int properReference(String string){
@@ -53,9 +51,9 @@ private String copyString(String copy,String original, char separationSymbol){
 		setTokenCounts(tokenCounts);
 		setOffsetTracker(offsetTracker);
 		int offset=0;
-		try(BufferedReader reader= new BufferedReader(new FileReader("C:\\Users\\chris\\Desktop\\Paper\\test.txt"))){
-			Integer id=16057;
-			try(BufferedWriter writer= new BufferedWriter(new FileWriter("C:\\Users\\chris\\Desktop\\Paper\\test2.txt"))){
+		try(BufferedReader reader= new BufferedReader(new FileReader("C:\\Users\\chris\\Desktop\\Paper\\StackOverflow Posts\\D5\\D5.csv"))){
+			Integer id=16052+10;
+			try(BufferedWriter writer= new BufferedWriter(new FileWriter("C:\\Users\\chris\\Desktop\\Paper\\StackOverflow Posts\\D5\\D5XMI.txt"))){
 				String string = reader.readLine();
 				string = reader.readLine();
 				while(string!=null){
@@ -64,18 +62,19 @@ private String copyString(String copy,String original, char separationSymbol){
 					String end="";
 					index=0; 
 					edit=copyString(edit, string, ';');
+					System.out.println("1");
 					index++;
 					offset=properReference(string);
+					System.out.println("2");
 					index++;
 					begin=copyString(begin, string , ' ');
-					if(edit.equals("Knowledge Certainity Indicator")){
-						System.out.println(pageIndex+"\t"+begin+"\t"+offset);
-					}
+					System.out.println("3");
 					offset+=Integer.valueOf(begin);
 					offset-=addOffset(Integer.valueOf(begin));
 					index+=3;
 					begin=Integer.toString(offset);
 					offset=properReference(string);
+					System.out.println("4");
 					index++;
 					while(index!=string.length()){
 						end+=string.charAt(index);
@@ -84,12 +83,18 @@ private String copyString(String copy,String original, char separationSymbol){
 					offset+=Integer.valueOf(end);
 					offset-=addOffset(Integer.valueOf(end));
 					end=Integer.toString(offset);
-					
-					//<chunk:Chunk xmi:id="14986" sofa="12" begin="0" end="15" chunkValue="test"/>
-					writer.write("<custom:Test xmi:id="+"\""+id.toString()+"\" sofa=\"12\" begin=\""+begin+"\" end=\""+end+"\"  annotation=\""+edit+"\"/>"+"\n");
-					listOfIndexes.offer(id);
-					id+=5;
+					if(Integer.valueOf(end)<Integer.valueOf(begin)){
+						System.out.println("something went wrong, end smaller \t"+offset);
+					}
+					else{
+						//<chunk:Chunk xmi:id="14986" sofa="12" begin="0" end="15" chunkValue="test"/>
+						writer.write("<type:CoreferenceLink xmi:id="+"\""+id.toString()+"\" sofa=\"12\" begin=\""+begin+"\" end=\""+end+"\"  annotation=\""+edit+"\"/>"+"\n");
+						listOfIndexes.offer(id);
+						id+=10;
+					}
+					System.out.println("5");
 					string = reader.readLine();
+					System.out.println("6");
 				}
 				index=0;
 				while(index<4){
