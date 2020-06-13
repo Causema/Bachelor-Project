@@ -5,7 +5,8 @@ public class Main {
 		TXTtoTSV test=new TXTtoTSV();
 		int tokenCounts[]=test.getTokenCounts();
 		int offsetTracker[][]=test.getOffsetTracker();
-		CsvToXmi start = new CsvToXmi(tokenCounts,offsetTracker);
+		CSVFilter filter=new CSVFilter();
+		//CsvToXmi start = new CsvToXmi(tokenCounts,offsetTracker);
 	}
 
 }

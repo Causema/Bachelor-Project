@@ -19,8 +19,8 @@ private int addOffset(int location){
 	}
 	return offset;
 }
-private int properReference(String string){
-	pageIndex=copyString("", string , ':');
+private int properReference(String string, BufferedReader reader) throws IOException{
+	pageIndex=copyString("", string , ':',reader);
 	int i;
 	int offset=0;
 	for(i=1;i<Integer.valueOf(pageIndex);i++){
@@ -29,12 +29,25 @@ private int properReference(String string){
 	return offset;
 }
 
-private String copyString(String copy,String original, char separationSymbol){
+private String copyString(String copy,String original, char separationSymbol, BufferedReader reader) throws IOException{
+	System.out.println(original);
+	
+	/*if(original.charAt(index)=='"'){
+		original+=reader.readLine();
+		original.replace('"',' ');
+	}*/
 	while(original.charAt(index)!=separationSymbol){
+		if(index>=original.length()){
+			System.out.println(original);
+			return "not defined";
+		}
+		if(original.charAt(index)=='\n'){
+			return copy.trim();
+		}
 		copy+=original.charAt(index);
 		index++;
-		}
-	return copy;
+	}
+	return copy.trim();
 	}
 	
 	public void setOffsetTracker(int[][] offsetTracker) {
@@ -43,17 +56,14 @@ private String copyString(String copy,String original, char separationSymbol){
 
 	public void setTokenCounts(int[] tokenCounts) {
 	this.tokenCounts = tokenCounts;
-	int i=1;
-	int test=0;
-	
 }
 	CsvToXmi(int tokenCounts[],int offsetTracker[][]){
 		setTokenCounts(tokenCounts);
 		setOffsetTracker(offsetTracker);
 		int offset=0;
-		try(BufferedReader reader= new BufferedReader(new FileReader("C:\\Users\\chris\\Desktop\\Paper\\StackOverflow Posts\\D5\\D5.csv"))){
+		try(BufferedReader reader= new BufferedReader(new FileReader("C:\\Users\\chris\\Desktop\\Paper\\StackOverflow Posts\\D1\\D1V2.csv"))){
 			Integer id=16052+10;
-			try(BufferedWriter writer= new BufferedWriter(new FileWriter("C:\\Users\\chris\\Desktop\\Paper\\StackOverflow Posts\\D5\\D5XMI.txt"))){
+			try(BufferedWriter writer= new BufferedWriter(new FileWriter("C:\\Users\\chris\\Desktop\\Paper\\StackOverflow Posts\\D1\\D1XMI.txt"))){
 				String string = reader.readLine();
 				string = reader.readLine();
 				while(string!=null){
@@ -61,20 +71,16 @@ private String copyString(String copy,String original, char separationSymbol){
 					String begin="";
 					String end="";
 					index=0; 
-					edit=copyString(edit, string, ';');
-					System.out.println("1");
+					edit=copyString(edit, string, ';',reader);
 					index++;
-					offset=properReference(string);
-					System.out.println("2");
+					offset=properReference(string,reader);
 					index++;
-					begin=copyString(begin, string , ' ');
-					System.out.println("3");
+					begin=copyString(begin, string , ' ',reader);
 					offset+=Integer.valueOf(begin);
 					offset-=addOffset(Integer.valueOf(begin));
 					index+=3;
 					begin=Integer.toString(offset);
-					offset=properReference(string);
-					System.out.println("4");
+					offset=properReference(string,reader);
 					index++;
 					while(index!=string.length()){
 						end+=string.charAt(index);
@@ -92,9 +98,7 @@ private String copyString(String copy,String original, char separationSymbol){
 						listOfIndexes.offer(id);
 						id+=10;
 					}
-					System.out.println("5");
 					string = reader.readLine();
-					System.out.println("6");
 				}
 				index=0;
 				while(index<4){
