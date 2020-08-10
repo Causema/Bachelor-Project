@@ -3,12 +3,11 @@ public class TXTtoTSV {
 	String EOF="EindeBestand";
 	String EOA="EindeParagraaf";
 	String EOP="EindePagina";
-	int test=0;
 	int tokenCounts[]=new int[99];
 	int offsetTracker[][]=new int[10][10000];
 	Integer index=0;
 	int pageCounter=1;
-	int counter;
+	int counter=19;
 	int answerID=1;
 	public int[][] getOffsetTracker() {
 		return offsetTracker;
@@ -22,6 +21,9 @@ public class TXTtoTSV {
 		return tokenCounts;
 	}
 
+	public int getCounter(){
+		return counter;
+	}
 	private String completeAnswer(BufferedReader reader,String string) throws IOException{
 		String answer="";
 		String answerNumber="ANSWER "+answerID+" ";
@@ -29,21 +31,20 @@ public class TXTtoTSV {
 			if(!string.equals(EOP)){
 				answer+=string+" ";
 				tokenCounts[pageCounter]+=string.length()+1;
-				test++;
 			}else{
 				pageCounter++;
 				
 			}
 			string=reader.readLine();
 		}
-		offsetTracker[pageCounter][tokenCounts[pageCounter]]=Integer.parseInt(reader.readLine())+answerNumber.length();
+		tokenCounts[pageCounter]+=answerNumber.length();
+		offsetTracker[pageCounter][tokenCounts[pageCounter]]=Integer.parseInt(reader.readLine())-answerNumber.length();
 		answerID++;
 		return answer+answerNumber;
 	}
 	
 	private String produceSingularWord(String answer){
 		String word="";
-		int temp=0;
 		while(answer.charAt(index)!=' '&& answer.charAt(index)!='\t'){
 			word+=answer.charAt(index);
 			counter++;
@@ -51,6 +52,9 @@ public class TXTtoTSV {
 				if(index==answer.length()){
 					break;
 				}
+		}
+		if(answer.charAt(index)==' '){
+			counter+=13;
 		}
 		return word;
 	}
@@ -68,13 +72,13 @@ public class TXTtoTSV {
 			}
 		}
 	}
-	public TXTtoTSV() throws IOException {
+	public TXTtoTSV(String filePath) throws IOException {
 		index=0;
 		int docId=123456;
 		int id=1;
 	
-		BufferedReader reader= new BufferedReader(new FileReader("C:\\Users\\chris\\Desktop\\Paper\\StackOverflow Posts\\D1\\D1.txt"));
-		BufferedWriter writer= new BufferedWriter(new FileWriter("C:\\Users\\chris\\Desktop\\Paper\\StackOverflow Posts\\D1\\D1.tsv"));
+		BufferedReader reader= new BufferedReader(new FileReader(filePath+".txt"));
+		BufferedWriter writer= new BufferedWriter(new FileWriter(filePath+".tsv"));
 		String string="";
 		String answer="";
 		writer.write("# newdoc id = "+docId+" \n# newpar id = "+docId+"p"+id+" \n# sent_id = "+docId+"s"+id+"\n# text = ");

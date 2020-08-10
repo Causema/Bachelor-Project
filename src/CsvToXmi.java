@@ -14,12 +14,13 @@ String pageIndex="1";
 
 private int addOffset(int location){
 	int offset=0;
-	for(int i=0;i<=location;i++){
+	for(int i=0;i<location;i++){
 		offset+=offsetTracker[Integer.valueOf(pageIndex)][i];
 	}
+	//offset-=9;
 	return offset;
 }
-private int properReference(String string, BufferedReader reader) throws IOException{
+private int pageOffset(String string, BufferedReader reader) throws IOException{
 	pageIndex=copyString("", string , ':',reader);
 	int i;
 	int offset=0;
@@ -30,15 +31,8 @@ private int properReference(String string, BufferedReader reader) throws IOExcep
 }
 
 private String copyString(String copy,String original, char separationSymbol, BufferedReader reader) throws IOException{
-	System.out.println(original);
-	
-	/*if(original.charAt(index)=='"'){
-		original+=reader.readLine();
-		original.replace('"',' ');
-	}*/
 	while(original.charAt(index)!=separationSymbol){
 		if(index>=original.length()){
-			System.out.println(original);
 			return "not defined";
 		}
 		if(original.charAt(index)=='\n'){
@@ -57,13 +51,12 @@ private String copyString(String copy,String original, char separationSymbol, Bu
 	public void setTokenCounts(int[] tokenCounts) {
 	this.tokenCounts = tokenCounts;
 }
-	CsvToXmi(int tokenCounts[],int offsetTracker[][]){
+	CsvToXmi(int tokenCounts[],int offsetTracker[][],Integer id,String filePath){
 		setTokenCounts(tokenCounts);
 		setOffsetTracker(offsetTracker);
 		int offset=0;
-		try(BufferedReader reader= new BufferedReader(new FileReader("C:\\Users\\chris\\Desktop\\Paper\\StackOverflow Posts\\D1\\D1V2.csv"))){
-			Integer id=16052+10;
-			try(BufferedWriter writer= new BufferedWriter(new FileWriter("C:\\Users\\chris\\Desktop\\Paper\\StackOverflow Posts\\D1\\D1XMI.txt"))){
+		try(BufferedReader reader= new BufferedReader(new FileReader(filePath+"V2.csv"))){
+			try(BufferedWriter writer= new BufferedWriter(new FileWriter(filePath+"XMI.txt"))){
 				String string = reader.readLine();
 				string = reader.readLine();
 				while(string!=null){
@@ -71,39 +64,46 @@ private String copyString(String copy,String original, char separationSymbol, Bu
 					String begin="";
 					String end="";
 					index=0; 
+					int answerOffset=-1;
+					offset=-1;
 					edit=copyString(edit, string, ';',reader);
 					index++;
-					offset=properReference(string,reader);
+					offset+=pageOffset(string,reader);
 					index++;
 					begin=copyString(begin, string , ' ',reader);
 					offset+=Integer.valueOf(begin);
-					offset-=addOffset(Integer.valueOf(begin));
+					answerOffset+=addOffset(Integer.valueOf(begin));
+					offset-=answerOffset;
 					index+=3;
 					begin=Integer.toString(offset);
-					offset=properReference(string,reader);
+					offset=-1;
+					offset+=pageOffset(string,reader);
 					index++;
 					while(index!=string.length()){
 						end+=string.charAt(index);
 						index++;
 					}
+					
 					offset+=Integer.valueOf(end);
-					offset-=addOffset(Integer.valueOf(end));
+					offset-=answerOffset;
 					end=Integer.toString(offset);
+					
 					if(Integer.valueOf(end)<Integer.valueOf(begin)){
-						System.out.println("something went wrong, end smaller \t"+offset);
+						System.out.print("something went wrong, end smaller \t"+edit);
 					}
 					else{
 						//<chunk:Chunk xmi:id="14986" sofa="12" begin="0" end="15" chunkValue="test"/>
-						writer.write("<type:CoreferenceLink xmi:id="+"\""+id.toString()+"\" sofa=\"12\" begin=\""+begin+"\" end=\""+end+"\"  annotation=\""+edit+"\"/>"+"\n");
+						writer.write("<custom:Test xmi:id="+"\""+id.toString()+"\" sofa=\"12\" begin=\""+begin+"\" end=\""+end+"\"  annotation=\""+edit+"\" chaining=\"\" reference=\"\"/>"+"\n");
 						listOfIndexes.offer(id);
-						id+=10;
+						id+=11;
 					}
 					string = reader.readLine();
 				}
 				index=0;
+				
 				while(index<4){
 					listOfIndexes.offer(id);
-					id+=13;
+					id+=11;
 					index++;
 				}
 				while(!listOfIndexes.isEmpty()){
