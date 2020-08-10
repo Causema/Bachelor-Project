@@ -9,7 +9,7 @@ public class TXTtoTSV {
 	Integer index=0;
 	int pageCounter=1;
 	int counter;
-	
+	int answerID=1;
 	public int[][] getOffsetTracker() {
 		return offsetTracker;
 	}
@@ -24,21 +24,21 @@ public class TXTtoTSV {
 
 	private String completeAnswer(BufferedReader reader,String string) throws IOException{
 		String answer="";
+		String answerNumber="ANSWER "+answerID+" ";
 		while(!string.equals(EOA)){
 			if(!string.equals(EOP)){
 				answer+=string+" ";
 				tokenCounts[pageCounter]+=string.length()+1;
 				test++;
 			}else{
-				System.out.println(pageCounter+"\t"+tokenCounts[pageCounter]);
 				pageCounter++;
 				
 			}
 			string=reader.readLine();
 		}
-		offsetTracker[pageCounter][tokenCounts[pageCounter]]=Integer.parseInt(reader.readLine());
-	//	System.out.println(pageCounter+"\t"+tokenCounts[pageCounter]+"\t"+offsetTracker[pageCounter][tokenCounts[pageCounter]]);
-		return answer;
+		offsetTracker[pageCounter][tokenCounts[pageCounter]]=Integer.parseInt(reader.readLine())+answerNumber.length();
+		answerID++;
+		return answer+answerNumber;
 	}
 	
 	private String produceSingularWord(String answer){
@@ -73,24 +73,23 @@ public class TXTtoTSV {
 		int docId=123456;
 		int id=1;
 	
-		BufferedReader reader= new BufferedReader(new FileReader("C:\\Users\\chris\\Desktop\\Paper\\D5test.txt"));
-		BufferedWriter writer= new BufferedWriter(new FileWriter("C:\\Users\\chris\\Desktop\\Paper\\D5.tsv"));
+		BufferedReader reader= new BufferedReader(new FileReader("C:\\Users\\chris\\Desktop\\Paper\\StackOverflow Posts\\D1\\D1.txt"));
+		BufferedWriter writer= new BufferedWriter(new FileWriter("C:\\Users\\chris\\Desktop\\Paper\\StackOverflow Posts\\D1\\D1.tsv"));
 		String string="";
+		String answer="";
+		writer.write("# newdoc id = "+docId+" \n# newpar id = "+docId+"p"+id+" \n# sent_id = "+docId+"s"+id+"\n# text = ");
+		id++;
+		string=reader.readLine();
 		while(!string.equals(EOF)){
-			String answer="";
-			writer.write("# newdoc id = "+docId+" \n# newpar id = "+docId+"p"+id+" \n# sent_id = "+docId+"s"+id+"\n# text = ");
-			id++;
+			answer+=completeAnswer(reader,string);
 			string=reader.readLine();
-			if(string.equals(EOF)){
-				break;
 			}
-			answer=completeAnswer(reader,string);
-			answer.trim();
-			writer.write(answer+"\n");
-			answer+='$';
-			dissectSentence(answer, writer);
-			index=0;
-		}
+		answer.trim();
+		writer.write(answer+"\n");
+		answer+='$';
+		dissectSentence(answer, writer);
+		index=0;
+		
 		writer.close();
 		}
 			
